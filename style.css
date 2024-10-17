@@ -5,13 +5,14 @@ body {
 
 .container {
     max-width: 1200px;
+    margin: 0 auto;
 }
 
-.news-card {
+.repo-card {
     transition: transform 0.2s ease-in-out;
 }
 
-.news-card:hover {
+.repo-card:hover {
     transform: translateY(-5px);
 }
 
@@ -49,4 +50,10 @@ body {
     border: 1px solid #e2e8f0;
     border-radius: 0.25rem;
     font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
 }
