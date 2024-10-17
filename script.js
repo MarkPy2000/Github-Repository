@@ -1,75 +1,72 @@
-const newsContainer = document.getElementById('news-container');
+const reposContainer = document.getElementById('repos-container');
 const searchInput = document.getElementById('search-input');
 const prevPageButton = document.getElementById('prev-page');
 const nextPageButton = document.getElementById('next-page');
 const pageInfo = document.getElementById('page-info');
 
 let currentPage = 1;
-const articlesPerPage = 10;
-const apiKey = '58655e732f538bc99ef538224c7f06d4'; // Replace with your actual GNews API key
+const reposPerPage = 10;
 
-async function fetchNews() {
+async function fetchRepos() {
     try {
-        newsContainer.innerHTML = '<p class="text-gray-600 text-center">Loading news articles...</p>';
+        reposContainer.innerHTML = '<p class="text-gray-600 text-center">Loading repositories...</p>';
         
         const searchTerm = searchInput.value.trim();
-        const query = searchTerm ? `${searchTerm}+artificial-intelligence` : 'artificial-intelligence';
+        const query = searchTerm ? `${searchTerm}` : 'artificial-intelligence';
         
-        console.log('Fetching news with query:', query); // Debug statement
+        console.log('Fetching repositories with query:', query); // Debug statement
         
-        const url = `https://gnews.io/api/v4/search?q=${query}&lang=en&country=us&max=${articlesPerPage}&page=${currentPage}&apikey=${apiKey}`;
-        
-        const response = await fetch(url, {
-            method: 'GET',
-            mode: 'cors', // Ensure CORS is enabled
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&per_page=${reposPerPage}&page=${currentPage}`);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json();
+            if (response.status === 403 && errorData.message.includes('API rate limit exceeded')) {
+                reposContainer.innerHTML = '<p class="text-red-500 text-center">API rate limit exceeded. Please try again later or authenticate your requests.</p>';
+            } else {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return;
         }
         
         const data = await response.json();
         
-        console.log('API Response:', data); // Debug statement
+        console.log('GitHub API Response:', data); // Debug statement
 
-        if (data.articles && data.articles.length > 0) {
-            displayNews(data.articles);
+        if (data.items && data.items.length > 0) {
+            displayRepos(data.items);
         } else {
-            newsContainer.innerHTML = '<p class="text-gray-600 text-center">No news articles found matching your criteria.</p>';
+            reposContainer.innerHTML = '<p class="text-gray-600 text-center">No repositories found matching your criteria.</p>';
         }
 
-        updatePagination(data.totalArticles);
+        updatePagination(data.total_count);
     } catch (error) {
-        console.error('Error fetching news articles:', error);
-        newsContainer.innerHTML = '<p class="text-red-500 text-center">Error fetching news articles. Please try again later.</p>';
+        console.error('Error fetching repositories:', error);
+        reposContainer.innerHTML = '<p class="text-red-500 text-center">Error fetching repositories. Please try again later.</p>';
     }
 }
 
-function displayNews(articles) {
-    newsContainer.innerHTML = '';
-    articles.forEach(article => {
-        const newsCard = document.createElement('div');
-        newsCard.classList.add('news-card', 'mb-4', 'p-4', 'bg-gray-50', 'rounded-lg', 'shadow');
-        newsCard.innerHTML = `
+function displayRepos(repos) {
+    reposContainer.innerHTML = '';
+    repos.forEach(repo => {
+        const repoCard = document.createElement('div');
+        repoCard.classList.add('repo-card', 'mb-4', 'p-4', 'bg-gray-50', 'rounded-lg', 'shadow');
+        repoCard.innerHTML = `
             <h3 class="text-lg font-semibold mb-2">
-                <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${article.title}</a>
+                <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${repo.full_name}</a>
             </h3>
-            <p class="text-gray-700 mb-2">${article.description || 'No description available.'}</p>
+            <p class="text-gray-700 mb-2">${repo.description || 'No description available.'}</p>
             <div class="flex items-center text-sm text-gray-600">
-                <span class="mr-4">Published at: ${new Date(article.publishedAt).toLocaleDateString()}</span>
-                <span>Source: ${article.source.name}</span>
+                <span class="mr-4">⭐ ${repo.stargazers_count} stars</span>
+                <span>🍴 ${repo.forks_count} forks</span>
             </div>
         `;
-        newsContainer.appendChild(newsCard);
+        reposContainer.appendChild(repoCard);
     });
 }
 
-function updatePagination(totalResults) {
-    const totalPages = Math.ceil(totalResults / articlesPerPage);
-    console.log('Total Results:', totalResults); // Debug statement
+function updatePagination(totalCount) {
+    const totalPages = Math.ceil(totalCount / reposPerPage);
+    console.log('Total Results:', totalCount); // Debug statement
     console.log('Total Pages:', totalPages); // Debug statement
 
     if (isNaN(totalPages)) {
@@ -85,18 +82,18 @@ function updatePagination(totalResults) {
 prevPageButton.addEventListener('click', () => {
     if (currentPage > 1) {
         currentPage--;
-        fetchNews();
+        fetchRepos();
     }
 });
 
 nextPageButton.addEventListener('click', () => {
     currentPage++;
-    fetchNews();
+    fetchRepos();
 });
 
 searchInput.addEventListener('input', () => {
     currentPage = 1;
-    fetchNews();
+    fetchRepos();
 });
 
-fetchNews();
+fetchRepos();
