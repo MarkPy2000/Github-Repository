@@ -6,57 +6,26 @@ const pageInfo = document.getElementById('page-info');
 
 let currentPage = 1;
 const reposPerPage = 10;
-let lastSearchTerm = '';
-let lastSearchResults = [];
-let lastTotalCount = 0;
-
-// Debounce function to delay API requests
-function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-const debouncedFetchRepos = debounce(fetchRepos, 500);
+let isLoading = false;
 
 async function fetchRepos() {
+    if (isLoading) return;
+    isLoading = true;
+    reposContainer.innerHTML = '<p class="text-gray-600 text-center">Loading repositories...</p>';
+
     try {
         const searchTerm = searchInput.value.trim();
-        if (searchTerm === lastSearchTerm && currentPage === 1) {
-            console.log('Using cached results for search term:', searchTerm); // Debug statement
-            displayRepos(lastSearchResults);
-            updatePagination(lastTotalCount);
-            return;
-        }
-        
-        reposContainer.innerHTML = '<p class="text-gray-600 text-center">Loading repositories...</p>';
-        
         const query = searchTerm ? `${searchTerm}` : 'artificial-intelligence';
-        
-        console.log('Fetching repositories with query:', query); // Debug statement
-        
+
         const response = await fetch(`https://api.github.com/search/repositories?q=${query}&sort=stars&per_page=${reposPerPage}&page=${currentPage}`);
-        
+
         if (!response.ok) {
-            const errorData = await response.json();
-            if (response.status === 403 && errorData.message.includes('API rate limit exceeded')) {
-                reposContainer.innerHTML = '<p class="text-red-500 text-center">API rate limit exceeded. Please try again later.</p>';
-            } else {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return;
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
-        console.log('GitHub API Response:', data); // Debug statement
 
         if (data.items && data.items.length > 0) {
-            lastSearchTerm = searchTerm;
-            lastSearchResults = data.items;
-            lastTotalCount = data.total_count;
             displayRepos(data.items);
         } else {
             reposContainer.innerHTML = '<p class="text-gray-600 text-center">No repositories found matching your criteria.</p>';
@@ -66,6 +35,8 @@ async function fetchRepos() {
     } catch (error) {
         console.error('Error fetching repositories:', error);
         reposContainer.innerHTML = '<p class="text-red-500 text-center">Error fetching repositories. Please try again later.</p>';
+    } finally {
+        isLoading = false;
     }
 }
 
@@ -90,14 +61,7 @@ function displayRepos(repos) {
 
 function updatePagination(totalCount) {
     const totalPages = Math.ceil(totalCount / reposPerPage);
-    console.log('Total Results:', totalCount); // Debug statement
-    console.log('Total Pages:', totalPages); // Debug statement
-
-    if (isNaN(totalPages)) {
-        pageInfo.textContent = 'Page NaN';
-    } else {
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    }
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
     prevPageButton.disabled = currentPage === 1;
     nextPageButton.disabled = currentPage === totalPages;
@@ -115,13 +79,13 @@ nextPageButton.addEventListener('click', () => {
     fetchRepos();
 });
 
+let debounceTimeout;
 searchInput.addEventListener('input', () => {
-    currentPage = 1;
-    debouncedFetchRepos();
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        currentPage = 1;
+        fetchRepos();
+    }, 300);
 });
 
-// Fetch repositories when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded event triggered. Fetching repositories...'); // Debug statement
-    fetchRepos();
-});
+fetchRepos();
