@@ -44,7 +44,7 @@ body {
     font-weight: bold;
 }
 
-#search-input {
+#search-input, #search-saved-repos {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid #e2e8f0;
@@ -56,4 +56,65 @@ body {
     .container {
         padding: 0 1rem;
     }
+}
+
+#sidebar {
+    z-index: 1000;
+}
+
+#toggle-sidebar, #close-sidebar {
+    background-color: #3182ce;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#toggle-sidebar:hover, #close-sidebar:hover {
+    background-color: #2c5282;
+}
+
+#saved-repos-container {
+    max-height: calc(100vh - 200px); /* Adjust the height as needed */
+    overflow-y: auto;
+}
+
+.repo-card {
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+#download-saved-repos {
+    width: 100%;
+}
+
+/* Fixed download button at the bottom of the sidebar */
+#sidebar .fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #1a202c; /* Match the sidebar background color */
+    padding: 1rem;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Floating Action Button (FAB) */
+#fab-toggle-sidebar {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1001; /* Ensure it's above other elements */
+    background-color: #3182ce;
+    color: #ffffff;
+    border-radius: 50%;
+    padding: 1.5rem; /* Increase padding to make the button bigger */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease-in-out;
+}
+
+#fab-toggle-sidebar:hover {
+    background-color: #2c5282;
+}
+
+#fab-toggle-sidebar svg {
+    width: 1.5rem; /* Increase the size of the icon */
+    height: 1.5rem; /* Increase the size of the icon */
 }
