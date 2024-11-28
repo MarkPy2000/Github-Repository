@@ -56,6 +56,15 @@ body {
     .container {
         padding: 0 1rem;
     }
+
+    #sidebar {
+        width: 100%;
+    }
+
+    #fab-toggle-sidebar {
+        bottom: 1rem;
+        right: 1rem;
+    }
 }
 
 #sidebar {
@@ -117,4 +126,96 @@ body {
 #fab-toggle-sidebar svg {
     width: 1.5rem; /* Increase the size of the icon */
     height: 1.5rem; /* Increase the size of the icon */
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #1a202c;
+    color: #ffffff;
+}
+
+.dark-mode .bg-gray-100 {
+    background-color: #2d3748;
+}
+
+.dark-mode .bg-gray-800 {
+    background-color: #1a202c;
+}
+
+.dark-mode .bg-gray-50 {
+    background-color: #4a5568;
+}
+
+.dark-mode .text-gray-700 {
+    color: #cbd5e0;
+}
+
+.dark-mode .text-gray-600 {
+    color: #a0aec0;
+}
+
+.dark-mode .text-gray-500 {
+    color: #718096;
+}
+
+.dark-mode .text-white {
+    color: #ffffff;
+}
+
+.dark-mode .text-blue-600 {
+    color: #63b3ed;
+}
+
+.dark-mode .text-red-500 {
+    color: #fc8181;
+}
+
+.dark-mode .text-green-500 {
+    color: #68d391;
+}
+
+/* Loading Indicator */
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#language-suggestions {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.autocomplete-suggestion {
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+#autocomplete-container {
+    position: absolute;
+    z-index: 1000; /* Ensure it's above other elements */
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.autocomplete-suggestion {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.autocomplete-suggestion:hover {
+    background-color: #f3f4f6;
 }
