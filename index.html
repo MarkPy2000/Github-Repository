@@ -11,6 +11,11 @@
     <header class="bg-gray-800 text-white py-4">
         <div class="container mx-auto flex items-center justify-between">
             <h1 id="github-hub" class="text-2xl font-bold">GitHub Repositories Hub</h1>
+            <button id="dark-mode-toggle" class="text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                <svg id="dark-mode-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
         </div>
     </header>
 
@@ -31,6 +36,23 @@
     <main class="container mx-auto py-8">
         <div class="mb-6">
             <input type="text" id="search-input" placeholder="Search repositories..." class="w-full p-2 border rounded-md">
+            <div id="autocomplete-container" class="absolute bg-white border rounded-md mt-1 shadow-lg"></div>
+        </div>
+        <div class="mb-6">
+            <label for="sort-by" class="mr-2">Sort by:</label>
+            <select id="sort-by" class="p-2 border rounded-md">
+                <option value="stars">Stars</option>
+                <option value="forks">Forks</option>
+                <option value="updated">Updated</option>
+            </select>
+        </div>
+        <div class="mb-6">
+            <label for="filter-by-language" class="mr-2">Language:</label>
+            <div class="relative">
+                <input type="text" id="language-search" placeholder="Search language..." class="w-full p-2 border rounded-md">
+                <button id="clear-language-search" class="absolute right-2 top-2 text-gray-600 hover:text-gray-800">Clear</button>
+            </div>
+            <div id="language-suggestions" class="absolute bg-white border rounded-md mt-1 shadow-lg hidden"></div>
         </div>
         <div id="repos-container" class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4">Popular Repositories</h2>
@@ -43,6 +65,27 @@
             <button id="next-page" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 ml-4">Next</button>
         </div>
     </main>
+
+    <div id="repo-details-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 max-w-lg w-full relative">
+            <button id="close-modal" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 id="modal-repo-name" class="text-xl font-semibold mb-4"></h2>
+            <p id="modal-repo-description" class="text-gray-700 mb-4"></p>
+            <div class="flex items-center text-sm text-gray-600">
+                <span id="modal-repo-stars" class="mr-4"></span>
+                <span id="modal-repo-forks"></span>
+            </div>
+            <a id="modal-repo-link" href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline mt-4 block">View on GitHub</a>
+        </div>
+    </div>
+
+    <div id="loading-indicator" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="loader"></div>
+    </div>
 
     <footer class="bg-gray-800 text-white py-4 mt-8">
         <div class="container mx-auto text-center">
